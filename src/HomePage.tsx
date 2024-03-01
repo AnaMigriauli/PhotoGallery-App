@@ -1,13 +1,13 @@
 import { useGallery } from "./GalleryContext";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const HomePage: React.FC = () => {
   const { data, isLoading, error, executeSearch } = useGallery();
   const [searchPhoto, setSearchPhoto] = useState<string>("");
 
-  useEffect(() => {
-    executeSearch("");
-  }, []);
+  // useEffect(() => {
+  //   executeSearch("");
+  // }, []);
 
   if (isLoading) {
     return <div>Loading...</div>;

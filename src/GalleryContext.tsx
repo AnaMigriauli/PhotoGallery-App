@@ -37,7 +37,7 @@ export const GalleryProvider: FC<GalleryProviderProps> = ({ children }) => {
     queryKey,
   }: QueryFunctionContext<[string, string]>) => {
     const [, query] = queryKey;
-    console.log(queryKey);
+    // console.log(queryKey);
     let url = "https://api.unsplash.com/photos?order_by=popular&per_page=20";
     if (query) {
       url = `https://api.unsplash.com/search/photos?query=${query}&per_page=20`;
@@ -67,7 +67,7 @@ export const GalleryProvider: FC<GalleryProviderProps> = ({ children }) => {
     setSearchHistory((prevHistory) => [...prevHistory, query]);
   };
 
-  console.log(searchHistory);
+  // console.log(searchHistory);
   return (
     <GalleryContext.Provider
       value={{ data, isLoading, error, searchHistory, executeSearch }}
