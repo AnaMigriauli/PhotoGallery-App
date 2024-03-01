@@ -55,6 +55,7 @@ export const GalleryProvider: FC<GalleryProviderProps> = ({ children }) => {
     const jsonData = await response.json();
     return query ? jsonData.results : jsonData;
   };
+  console.log();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["photos", searchTerm],
@@ -64,7 +65,9 @@ export const GalleryProvider: FC<GalleryProviderProps> = ({ children }) => {
 
   const executeSearch = async (query: string) => {
     setSearchTerm(query);
-    setSearchHistory((prevHistory) => [...prevHistory, query]);
+    if (!searchHistory.includes(query)) {
+      setSearchHistory((prevHistory) => [...prevHistory, query]);
+    }
   };
 
   // console.log(searchHistory);

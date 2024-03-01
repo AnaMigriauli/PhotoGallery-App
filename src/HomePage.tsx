@@ -1,13 +1,10 @@
 import { useGallery } from "./GalleryContext";
 import { useState } from "react";
+import Modal from "./ImageModal";
 
 const HomePage: React.FC = () => {
   const { data, isLoading, error, executeSearch } = useGallery();
   const [searchPhoto, setSearchPhoto] = useState<string>("");
-
-  // useEffect(() => {
-  //   executeSearch("");
-  // }, []);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -46,6 +43,7 @@ const HomePage: React.FC = () => {
           />
         ))}
       </div>
+      {/* <Modal /> */}
     </div>
   );
 };
