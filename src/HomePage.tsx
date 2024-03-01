@@ -5,6 +5,7 @@ import Modal from "./ImageModal";
 const HomePage: React.FC = () => {
   const { data, isLoading, error, executeSearch } = useGallery();
   const [searchPhoto, setSearchPhoto] = useState<string>("");
+  const [isModalOpen, setModalOpen] = useState(false);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -22,7 +23,12 @@ const HomePage: React.FC = () => {
       searchPhoto.trim() !== "" && executeSearch(searchPhoto);
     }
   };
-  console.log(searchPhoto);
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  };
+
+  // Function to close the modal
+  const closeModal = () => setModalOpen(false);
 
   return (
     <div>
@@ -39,11 +45,12 @@ const HomePage: React.FC = () => {
           <img
             key={photo.id}
             src={photo.urls.small}
-            alt={photo.alt_description}
+            alt={photo.alt_descrition}
+            onClick={handleOpenModal}
           />
         ))}
       </div>
-      {/* <Modal /> */}
+      {isModalOpen && <Modal isOpen={isModalOpen} onClose={closeModal}></Modal>}
     </div>
   );
 };

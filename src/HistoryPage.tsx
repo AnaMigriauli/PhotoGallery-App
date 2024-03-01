@@ -31,7 +31,7 @@ const HistoryPage = () => {
             <img
               key={photo.id}
               src={photo.urls.small}
-              alt={photo.alt_description}
+              alt={photo.alt_descrition}
             />
           ))}
       </div>

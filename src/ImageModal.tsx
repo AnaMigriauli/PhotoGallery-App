@@ -1,12 +1,15 @@
 import { createPortal } from "react-dom";
 import styled from "styled-components";
+import { useState } from "react";
 
-const Modal = ({ children }) => {
+const Modal = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+
   return createPortal(
     <div>
       <ImageModal>
         {children}
-        <CloseButton>
+        <CloseButton onClick={onClose}>
           <svg
             // class="FsJPV"
             width="24"
@@ -20,7 +23,7 @@ const Modal = ({ children }) => {
           </svg>
         </CloseButton>
       </ImageModal>
-      ,<Overlay></Overlay>
+      ,<Overlay onClick={onClose}></Overlay>
     </div>,
     document.getElementById("modal")
   );
