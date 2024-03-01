@@ -1,16 +1,47 @@
-import { Children, createContext, useContext } from "react";
+import { useState, createContext, useContext, ReactNode, FC } from "react";
+import { useQuery, QueryFunctionContext } from "@tanstack/react-query";
 
-const GalleryContext = createContext();
+interface Photo {
+  id: string;
+  urls: { small: string };
+  alt_descrition: string;
+}
+
+interface GalleryContextType {
+  data: Photo[] | null;
+  isLoading: boolean;
+  error: Error | null;
+  searchHistory: string[];
+  executeSearch: (query: string) => void;
+}
+
+const GalleryContext = createContext<GalleryContextType>({
+  data: null,
+  isLoading: false,
+  error: null,
+  searchHistory: [],
+  executeSearch: () => {},
+});
 
 interface GalleryProviderProps {
   children: ReactNode;
 }
+
 const accessKey = "L2sqDC0mPRAmNahheL0QLjwgIqNLwj8b59SXSG7UncQ";
 
-export const GalleryProvider = ({ children }) => {
-  const fetchGallery = async () => {
-    const url = "https://api.unsplash.com/photos?order_by=popular&per_page=20";
+export const GalleryProvider: FC<GalleryProviderProps> = ({ children }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
+  const fetchGallery = async ({
+    queryKey,
+  }: QueryFunctionContext<[string, string]>) => {
+    const [, query] = queryKey;
+    console.log(queryKey);
+    let url = "https://api.unsplash.com/photos?order_by=popular&per_page=20";
+    if (query) {
+      url = `https://api.unsplash.com/search/photos?query=${query}&per_page=20`;
+    }
     const response = await fetch(url, {
       headers: {
         Authorization: `Client-ID ${accessKey}`,
@@ -22,11 +53,34 @@ export const GalleryProvider = ({ children }) => {
     }
 
     const jsonData = await response.json();
-    return jsonData;
+    return query ? jsonData.results : jsonData;
   };
-  fetchGallery;
 
-  return <GalleryContext.Provider>{Children}</GalleryContext.Provider>;
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["photos", searchTerm],
+    queryFn: fetchGallery,
+    enabled: true,
+  });
+
+  const executeSearch = async (query: string) => {
+    setSearchTerm(query);
+    setSearchHistory((prevHistory) => [...prevHistory, query]);
+  };
+
+  console.log(searchHistory);
+  return (
+    <GalleryContext.Provider
+      value={{ data, isLoading, error, searchHistory, executeSearch }}
+    >
+      {children}
+    </GalleryContext.Provider>
+  );
 };
 
-export const useGallery = () => useContext(GalleryContext);
+export const useGallery = (): GalleryContextType => {
+  const context = useContext(GalleryContext);
+  if (context === undefined) {
+    throw new Error("useGallery must be used within a GalleryProvider");
+  }
+  return context;
+};
