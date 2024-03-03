@@ -4,7 +4,6 @@ import { useState } from "react";
 const HistoryPage = () => {
   const { photos, searchHistory, executeSearch } = useGallery();
   const [DisplayData, setDisplayData] = useState(false);
-  console.log(searchHistory);
 
   const handleHistoryItemClick = (term: string) => {
     executeSearch(term);
@@ -14,16 +13,21 @@ const HistoryPage = () => {
   return (
     <div>
       <ul>
-        {searchHistory.map((term, index) => (
-          <li
-            key={index}
-            onClick={() => {
-              handleHistoryItemClick(term);
-            }}
-          >
-            {term}
-          </li>
-        ))}
+        {searchHistory ? (
+          searchHistory.map((term, index) => (
+            <li
+              style={{ cursor: "pointer", listStyle: "none" }}
+              key={index}
+              onClick={() => {
+                handleHistoryItemClick(term);
+              }}
+            >
+              {term}
+            </li>
+          ))
+        ) : (
+          <p>There is no data in history</p>
+        )}
       </ul>
       <div>
         {DisplayData &&
@@ -31,7 +35,7 @@ const HistoryPage = () => {
             <img
               key={photo.id}
               src={photo.urls.small}
-              alt={photo.alt_descrition}
+              alt={photo.alt_description}
             />
           ))}
       </div>

@@ -2,10 +2,15 @@ import { useGallery } from "./GalleryContext";
 import { useState, useEffect, useRef } from "react";
 import Modal from "./ImageModal";
 import styled from "styled-components";
+interface Photo {
+  id: string;
+  urls: { small: string };
+  alt_description?: string;
+  likes?: number;
+}
 
 const HomePage: React.FC = () => {
-  const { photos, isLoading, error, executeSearch, fetchNextPage } =
-    useGallery();
+  const { photos, isLoading, executeSearch, fetchNextPage } = useGallery();
   const [searchPhoto, setSearchPhoto] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
@@ -15,14 +20,14 @@ const HomePage: React.FC = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         const first = entries[0];
-        if (first.isIntersecting) {
+        if (first.isIntersecting && !isLoading) {
           fetchNextPage();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 1 }
     );
 
-    if (loader.current) {
+    if (observer && loader.current) {
       observer.observe(loader.current);
     }
 
@@ -31,33 +36,38 @@ const HomePage: React.FC = () => {
         observer.unobserve(loader.current);
       }
     };
-  }, []);
+  }, [photos]);
 
   const handlePhotoSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchPhoto(e.target.value);
   };
 
-  const handleEnterForSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && searchPhoto.trim() !== "") {
-      executeSearch(searchPhoto);
-    }
-  };
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      searchPhoto.trim() !== "" && executeSearch(searchPhoto);
+    }, 700); //
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchPhoto]);
 
   const handleOpenModal = (photo: Photo) => {
+    console.log(photo);
     setSelectedPhoto(photo);
     setModalOpen(true);
   };
 
   const closeModal = () => setModalOpen(false);
 
+  console.log(SelectedPhoto);
   return (
     <div>
-      <input
+      <Input
         type="text"
         placeholder="Search..."
         value={searchPhoto}
         onChange={handlePhotoSearch}
-        onKeyDown={handleEnterForSearch}
       />
 
       {isLoading && <div>Loading...</div>}
@@ -72,16 +82,18 @@ const HomePage: React.FC = () => {
           />
         ))}
       </div>
-
-      <div ref={loader} style={{ height: "20px", margin: "10px" }} />
+      {!isLoading && (
+        <div ref={loader} style={{ height: "20px", margin: "10px" }} />
+      )}
 
       {isModalOpen && selectedPhoto && (
         <Modal isOpen={isModalOpen} onClose={closeModal}>
           <SelectedPhoto
+            key={selectedPhoto.id}
             src={selectedPhoto.urls.small}
             alt={selectedPhoto.alt_description || ""}
           />
-          <p>Likes: {selectedPhoto.likes}</p>
+          <p>Likes: {selectedPhoto.likes ?? "Not available"}</p>
         </Modal>
       )}
     </div>
@@ -96,109 +108,14 @@ const SelectedPhoto = styled.img`
   object-fit: contain;
 `;
 
-// import { useGallery } from "./GalleryContext";
-// import { useState, useEffect, useRef } from "react";
-// import Modal from "./ImageModal";
-// import styled from "styled-components";
+const Input = styled.input`
+  width: 170px;
+  padding: 4px;
+  outline: none;
+  border-radius: 4px;
+  border: 1px solid black;
 
-// const HomePage: React.FC = () => {
-//   const { photos, isLoading, error, executeSearch, fetchNextPage } =
-//     useGallery();
-//   const [searchPhoto, setSearchPhoto] = useState<string>("");
-//   const [isModalOpen, setModalOpen] = useState<boolean>(false);
-//   const [selectedPhoto, setSelectedPhoto] = useState();
-//   const loader = useRef(null);
-
-//   useEffect(() => {
-//     const observer = new IntersectionObserver(
-//       (entries) => {
-//         const first = entries[0];
-//         if (first.isIntersecting) {
-//           fetchNextPage();
-//         }
-//       },
-//       { threshold: 1 }
-//     );
-
-//     if (loader.current) {
-//       observer.observe(loader.current);
-//     }
-//     console.log(loader.current);
-//     return () => {
-//       if (loader.current) {
-//         observer.unobserve(loader.current);
-//       }
-//     };
-//   }, []);
-
-//   if (error) {
-//     return <div>Error: {error.toString()}</div>;
-//   }
-//   const handlephotoSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setSearchPhoto(e.target.value);
-//   };
-
-//   const handleEnterForSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-//     if (e.key === "Enter") {
-//       searchPhoto.trim() !== "" && executeSearch(searchPhoto);
-//     }
-//   };
-//   const handleOpenModal = (photo) => {
-//     setSelectedPhoto(photo);
-//     setModalOpen(true);
-//   };
-//   const closeModal = () => setModalOpen(false);
-
-//   return (
-//     <div>
-//       <input
-//         type="text"
-//         placeholder="Search..."
-//         value={searchPhoto}
-//         onChange={handlephotoSearch}
-//         onKeyDown={handleEnterForSearch}
-//       />
-
-//       {isLoading ? (
-//         <div>Loading...</div>
-//       ) : (
-//         <Gallery>
-//           {photos?.map((photo) => (
-//             <img
-//               key={photo.id}
-//               src={photo.urls.small}
-//               alt={photo.alt_descrition}
-//               onClick={() => handleOpenModal(photo)}
-//             />
-//           ))}
-//         </Gallery>
-//       )}
-//       <div ref={loader} />
-//       {isModalOpen && (
-//         <Modal isOpen={isModalOpen} onClose={closeModal}>
-//           <SelectedPhoto
-//             src={selectedPhoto?.urls.regular}
-//             alt={selectedPhoto?.alt_descrition}
-//           />
-//           <p>likes:{selectedPhoto?.likes}</p>
-//         </Modal>
-//       )}
-//     </div>
-//   );
-// };
-// export default HomePage;
-
-// const SelectedPhoto = styled.img`
-//   width: 50%;
-// `;
-
-// const Gallery = styled.div`
-//   display: grid;
-//   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-//   grid-gap: 15px;
-//   img {
-//     width: 100%;
-//     height: 200px; /* Adjust based on preference */
-//     object-fit: cover;
-//   }
-// `;
+  &:focus-visible {
+    border: 1px solid #add8e6;
+  }
+`;

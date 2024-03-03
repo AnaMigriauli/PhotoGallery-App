@@ -18,11 +18,16 @@ export default Navigatin;
 const Nav = styled.nav`
   display: flex;
   gap: 50px;
+  margin-top: 30px;
+  margin-bottom: 20px;
 
   button {
-    background: transparent;
+    background: #add8e6;
+    padding: 6px;
+    border-radius: 4px;
     border: none;
     font-size: 18px;
+    line-height: 20px;
     cursor: pointer;
     color: var(--black);
     border-bottom: 1px solid transparent;
