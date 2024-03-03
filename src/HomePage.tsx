@@ -4,7 +4,7 @@ import Modal from "./ImageModal";
 import styled from "styled-components";
 interface Photo {
   id: string;
-  urls: { small: string };
+  urls: { full: string };
   alt_description?: string;
   likes?: number;
 }
@@ -72,7 +72,7 @@ const HomePage: React.FC = () => {
 
       {isLoading && <div>Loading...</div>}
 
-      <div>
+      <MainContainer>
         {photos.map((photo) => (
           <img
             key={photo.id}
@@ -81,7 +81,7 @@ const HomePage: React.FC = () => {
             onClick={() => handleOpenModal(photo)}
           />
         ))}
-      </div>
+      </MainContainer>
       {!isLoading && (
         <div ref={loader} style={{ height: "20px", margin: "10px" }} />
       )}
@@ -90,7 +90,7 @@ const HomePage: React.FC = () => {
         <Modal isOpen={isModalOpen} onClose={closeModal}>
           <SelectedPhoto
             key={selectedPhoto.id}
-            src={selectedPhoto.urls.small}
+            src={selectedPhoto.urls.full}
             alt={selectedPhoto.alt_description || ""}
           />
           <p>Likes: {selectedPhoto.likes ?? "Not available"}</p>
@@ -102,18 +102,32 @@ const HomePage: React.FC = () => {
 
 export default HomePage;
 
+const MainContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+
+  img {
+    width: 100%;
+    height: 350px;
+    cursor: pointer;
+  }
+`;
+
 const SelectedPhoto = styled.img`
-  width: 50%;
+  width: 90%;
   max-height: 80vh;
   object-fit: contain;
 `;
 
 const Input = styled.input`
-  width: 170px;
-  padding: 4px;
+  width: 250px;
+  padding: 10px;
   outline: none;
   border-radius: 4px;
   border: 1px solid black;
+  margin-bottom: 20px;
+  border: 1px solid #45a0be;
 
   &:focus-visible {
     border: 1px solid #add8e6;

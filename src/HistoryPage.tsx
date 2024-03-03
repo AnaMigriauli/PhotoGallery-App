@@ -13,7 +13,7 @@ const HistoryPage = () => {
   return (
     <div>
       <ul>
-        {searchHistory ? (
+        {searchHistory && searchHistory.length > 0 ? (
           searchHistory.map((term, index) => (
             <li
               style={{ cursor: "pointer", listStyle: "none" }}
