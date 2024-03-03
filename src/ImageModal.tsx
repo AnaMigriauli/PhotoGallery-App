@@ -35,8 +35,9 @@ const ImageModal = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 480px;
-  padding: 0 24px 40px 24px;
+  width: 80vw;
+  /* max-height: 80%; */
+  padding: 25px;
   border-radius: 12px;
   background: var(--white);
   z-index: 2500;

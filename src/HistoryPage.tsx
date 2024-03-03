@@ -2,7 +2,7 @@ import { useGallery } from "./GalleryContext";
 import { useState } from "react";
 
 const HistoryPage = () => {
-  const { data, searchHistory, executeSearch } = useGallery();
+  const { photos, searchHistory, executeSearch } = useGallery();
   const [DisplayData, setDisplayData] = useState(false);
   console.log(searchHistory);
 
@@ -27,7 +27,7 @@ const HistoryPage = () => {
       </ul>
       <div>
         {DisplayData &&
-          data?.map((photo) => (
+          photos?.map((photo) => (
             <img
               key={photo.id}
               src={photo.urls.small}
